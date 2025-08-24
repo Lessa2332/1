@@ -36,59 +36,41 @@
       text-align: center;
       width: 90%;
     }
-    #smartLessaBtn {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #ff0044;
-      color: white;
-      padding: 14px 24px;
-      border-radius: 30px;
-      font-size: 1.1em;
-      font-weight: bold;
-      text-decoration: none;
-      z-index: 10;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    }
-    #smartLessaBtn:hover {
-      background: #cc0036;
-    }
   </style>
 </head>
 <body>
   <div id="scanText">Наведи на зображення</div>
 
-  <!-- Приховане аудіо -->
-  <audio id="arAudio" src="ar-audio.mp3"></audio>
-
   <a-scene embedded id="arScene" arjs="sourceType: webcam; detectionMode: mono; trackingMethod: best;">
+    <!-- Маркер -->
     <a-marker id="marker" type="pattern" url="marker.patt">
-      <a-image id="arImage" src="image.png" position="0 0 0" rotation="-90 0 0" width="1.33" height="1" visible="false"></a-image>
+      
+      <!-- PNG-картинка -->
+      <a-image id="arImage" src="image.png" position="0 0 0" rotation="-90 0 0" width="2" height="2"></a-image>
+
+      <!-- Аудіо -->
+      <a-sound id="arAudio" src="audio.mp3" autoplay="false" loop="false" position="0 0 0"></a-sound>
+    
     </a-marker>
+
     <a-entity camera></a-entity>
   </a-scene>
-
-  <a href="https://youtube.com/playlist?list=PL6UDFwT9TzFxsVdFiEBsQ9yFpcYRPOpfO&si=IyXv1SkdPyvhcW7Z"
-     id="smartLessaBtn" target="_blank">@SmartLessa</a>
 
   <script>
     const marker = document.getElementById('marker');
     const scanText = document.getElementById('scanText');
-    const arImage = document.getElementById('arImage');
     const arAudio = document.getElementById('arAudio');
 
+    // Коли маркер знайдений → показує PNG + грає аудіо
     marker.addEventListener('markerFound', () => {
       scanText.style.display = 'none';
-      arImage.setAttribute('visible', true); // Показати зображення
-      arAudio.play().catch(e => console.log('Помилка відтворення аудіо:', e)); // Обробка помилок аудіо
+      arAudio.components.sound.playSound();
     });
 
+    // Коли маркер втрачено → показує текст + ставить паузу
     marker.addEventListener('markerLost', () => {
       scanText.style.display = 'block';
-      arImage.setAttribute('visible', false); // Приховати зображення
-      arAudio.pause();
-      arAudio.currentTime = 0; // Скинути аудіо до початку
+      arAudio.components.sound.stopSound();
     });
 
     // Фікс висоти для мобільних браузерів
